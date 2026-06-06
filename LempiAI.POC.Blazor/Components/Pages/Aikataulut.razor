@@ -1,0 +1,41 @@
+﻿@page "/aikataulut"
+@rendermode InteractiveServer
+
+<div class="container mt-5">
+    <h1>📅 Aikataulut</h1>
+    <hr>
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="alert alert-info">
+                <p><strong>Tämä sivu näyttää aikatauluhallinnon pääsyn.</strong></p>
+                <p>API-päätepisteet:</p>
+                <ul>
+                    <li>GET /api/operationsscheduling/schedules - Hae kaikki aikataulut</li>
+                    <li>POST /api/operationsscheduling/create - Luo uusi aikataulu</li>
+                    <li>GET /api/operationsscheduling/optimize/{employeeId} - Optimoi työntekijän aikataulua</li>
+                    <li>GET /api/operationsscheduling/recommendations - Saada suosituksia</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5>Aikatauluhallinta</h5>
+        </div>
+        <div class="card-body">
+            <p>Käytä seuraavia REST-API-päätepisteitä aikataulun hallintaan:</p>
+            <pre><code>
+# Hae kaikki aikataulut
+GET https://localhost:5001/api/operationsscheduling/schedules
+
+# Optimoi aikataulua
+POST https://localhost:5001/api/operationsscheduling/optimize/1
+
+# Saada suosituksia
+GET https://localhost:5001/api/operationsscheduling/recommendations
+            </code></pre>
+        </div>
+    </div>
+</div>

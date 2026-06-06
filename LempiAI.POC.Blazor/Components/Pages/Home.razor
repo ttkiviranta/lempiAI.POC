@@ -1,0 +1,66 @@
+﻿@page "/"
+@rendermode InteractiveServer
+
+<div class="container mt-5">
+    <div class="jumbotron bg-light p-5 rounded">
+        <h1 class="display-4">Tervetuloa lempiAI.POC</h1>
+        <p class="lead">Siivouspalveluiden AI-agenttijärjestelmä</p>
+        <hr class="my-4">
+        <p>Järjestelmä sisältää kolme älykkäästi toimivaa agenttia:</p>
+        <ul>
+            <li><strong>Operatiivinen aikatauluagentti</strong> - Optimoi työntekijöiden aikatauluja</li>
+            <li><strong>Asiakaspalvelu- ja palautteiden analyysiagentti</strong> - Analysoi palautteita ja tunnelmaa</li>
+            <li><strong>Prosessikehitys- ja raportointiagentti</strong> - Tunnistaa parannusmahdollisuuksia</li>
+        </ul>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5>📅 Aikataulut</h5>
+                </div>
+                <div class="card-body">
+                    <p>Hallinnoi työntekijöiden aikatauluja ja saada AI-pohjaisia optimointisuosituksia.</p>
+                    <a href="/aikataulut" class="btn btn-primary">Siirry aikatauluihin</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5>⭐ Palautteet</h5>
+                </div>
+                <div class="card-body">
+                    <p>Tarkastele asiakaspalautteita ja saa AI-pohjaisia analyyseja.</p>
+                    <a href="/palautteet" class="btn btn-success">Siirry palautteisiin</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5>👥 Työntekijät</h5>
+                </div>
+                <div class="card-body">
+                    <p>Hallinnoi organisaation työntekijätietoja.</p>
+                    <a href="/tyontekijat" class="btn btn-info">Siirry työntekijöihin</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5>📊 Raportit</h5>
+                </div>
+                <div class="card-body">
+                    <p>Tarkastele AI-generoituja raportteja ja parannusehdotuksia.</p>
+                    <a href="/raportit" class="btn btn-warning">Siirry raportteihin</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

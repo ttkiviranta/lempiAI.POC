@@ -1,0 +1,48 @@
+﻿# Build results
+bin/
+obj/
+out/
+*.dll
+*.exe
+*.pdb
+
+# Visual Studio
+.vs/
+.vscode/
+*.sln.iml
+*.user
+*.suo
+*.csproj.user
+
+# Dependencies
+packages/
+.nuget/
+
+# Logs
+logs/
+*.log
+
+# Environment
+.env
+.env.local
+appsettings.Development.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node (if using npm)
+node_modules/
+
+# Database
+*.mdf
+*.ldf
+*.db
+
+# Migrations (if using local SQL)
+Migrations/
+
+# IDE
+.idea/
+*.swp
+*.swo

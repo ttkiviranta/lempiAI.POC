@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="LempiAI.POC.API/LempiAI.POC.API.csproj" />
+  <Project Path="LempiAI.POC.Blazor/LempiAI.POC.Blazor.csproj" />
+</Solution>

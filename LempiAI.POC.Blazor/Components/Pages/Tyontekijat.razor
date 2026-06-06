@@ -1,0 +1,50 @@
+﻿@page "/tyontekijat"
+@rendermode InteractiveServer
+
+<div class="container mt-5">
+    <h1>👥 Työntekijät</h1>
+    <hr>
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="alert alert-info">
+                <p><strong>Tämä sivu näyttää työntekijähallinnon pääsyn.</strong></p>
+                <p>API-päätepisteet:</p>
+                <ul>
+                    <li>GET /api/employee - Hae kaikki työntekijät</li>
+                    <li>GET /api/employee/{id} - Hae yksittäinen työntekijä</li>
+                    <li>POST /api/employee - Luo uusi työntekijä</li>
+                    <li>PUT /api/employee/{id} - Päivitä työntekijä</li>
+                    <li>DELETE /api/employee/{id} - Poista työntekijä</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-info text-white">
+            <h5>Työntekijähallinta</h5>
+        </div>
+        <div class="card-body">
+            <p>Käytä seuraavia REST-API-päätepisteitä työntekijöiden hallintaan:</p>
+            <pre><code>
+# Hae kaikki työntekijät
+GET https://localhost:5001/api/employee
+
+# Hae yksittäinen työntekijä
+GET https://localhost:5001/api/employee/1
+
+# Luo uusi työntekijä
+POST https://localhost:5001/api/employee
+Content-Type: application/json
+
+{
+  "name": "Matti Meikäläinen",
+  "email": "matti@@example.com",
+  "role": "Siivoja",
+  "phoneNumber": "+358 123 456789"
+}
+            </code></pre>
+        </div>
+    </div>
+</div>

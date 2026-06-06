@@ -1,0 +1,41 @@
+﻿@page "/palautteet"
+@rendermode InteractiveServer
+
+<div class="container mt-5">
+    <h1>⭐ Asiakaspalautteet</h1>
+    <hr>
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="alert alert-info">
+                <p><strong>Tämä sivu näyttää palautehallinnon pääsyn.</strong></p>
+                <p>API-päätepisteet:</p>
+                <ul>
+                    <li>GET /api/customerservice/all-feedback - Hae kaikki palautteet</li>
+                    <li>POST /api/customerservice/submit-feedback - Lähetä uusi palaute</li>
+                    <li>POST /api/customerservice/analyze-feedback - Analysoi palautteita</li>
+                    <li>GET /api/customerservice/sentiment-summary - Saada tunneanalyysi</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h5>Palautehallinta</h5>
+        </div>
+        <div class="card-body">
+            <p>Käytä seuraavia REST-API-päätepisteitä palautteiden hallintaan:</p>
+            <pre><code>
+# Hae kaikki palautteet
+GET https://localhost:5001/api/customerservice/all-feedback
+
+# Analysoi palautteita
+POST https://localhost:5001/api/customerservice/analyze-feedback
+
+# Saada tunneanalyysi
+GET https://localhost:5001/api/customerservice/sentiment-summary
+            </code></pre>
+        </div>
+    </div>
+</div>

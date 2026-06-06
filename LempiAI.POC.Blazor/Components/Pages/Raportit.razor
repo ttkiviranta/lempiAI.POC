@@ -1,0 +1,44 @@
+﻿@page "/raportit"
+@rendermode InteractiveServer
+
+<div class="container mt-5">
+    <h1>📊 Raportit ja Parannusehdotukset</h1>
+    <hr>
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="alert alert-info">
+                <p><strong>Tämä sivu näyttää raporttien ja parannusehdotusten pääsyn.</strong></p>
+                <p>API-päätepisteet:</p>
+                <ul>
+                    <li>GET /api/processimprovement/reports - Hae kaikki raportit</li>
+                    <li>POST /api/processimprovement/identify-improvements - Tunnista parannukset</li>
+                    <li>POST /api/processimprovement/generate-report - Luo raportti</li>
+                    <li>GET /api/processimprovement/all-improvements - Hae kaikki parannusehdotukset</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-warning text-dark">
+            <h5>Raportit ja Parannusehdotukset</h5>
+        </div>
+        <div class="card-body">
+            <p>Käytä seuraavia REST-API-päätepisteitä raporttien ja parannusten hallintaan:</p>
+            <pre><code>
+# Hae kaikki raportit
+GET https://localhost:5001/api/processimprovement/reports
+
+# Tunnista parannusmahdollisuuksia
+POST https://localhost:5001/api/processimprovement/identify-improvements
+
+# Luo operationaalinen raportti
+POST https://localhost:5001/api/processimprovement/generate-report
+
+# Hae kaikki parannusehdotukset
+GET https://localhost:5001/api/processimprovement/all-improvements
+            </code></pre>
+        </div>
+    </div>
+</div>

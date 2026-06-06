@@ -1,0 +1,6 @@
+@LempiAI.POC.API_HostAddress = http://localhost:5287
+
+GET {{LempiAI.POC.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
