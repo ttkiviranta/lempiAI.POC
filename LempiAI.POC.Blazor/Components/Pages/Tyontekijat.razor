@@ -1,50 +1,93 @@
 ﻿@page "/tyontekijat"
-@rendermode InteractiveServer
+@inject ApiService ApiService
+@using LempiAI.POC.Blazor.Models
+@using LempiAI.POC.Blazor.Services
 
 <div class="container mt-5">
     <h1>👥 Työntekijät</h1>
     <hr>
 
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <div class="alert alert-info">
-                <p><strong>Tämä sivu näyttää työntekijähallinnon pääsyn.</strong></p>
-                <p>API-päätepisteet:</p>
-                <ul>
-                    <li>GET /api/employee - Hae kaikki työntekijät</li>
-                    <li>GET /api/employee/{id} - Hae yksittäinen työntekijä</li>
-                    <li>POST /api/employee - Luo uusi työntekijä</li>
-                    <li>PUT /api/employee/{id} - Päivitä työntekijä</li>
-                    <li>DELETE /api/employee/{id} - Poista työntekijä</li>
-                </ul>
+    @if (isLoading)
+    {
+        <p>Ladataan...</p>
+    }
+    else if (errorMessage != null)
+    {
+        <div class="alert alert-danger">@errorMessage</div>
+    }
+    else if (employees == null)
+    {
+        <div class="alert alert-warning">Ei työntekijöitä.</div>
+    }
+    else
+    {
+        <p>Ladattu @employees.Count työntekijää</p>
+
+        <div class="card mt-3">
+            <div class="card-header bg-info text-white">
+                <h5>Työntekijät</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Nimi</th>
+                            <th>Email</th>
+                            <th>Rooli</th>
+                            <th>Puhelinnumero</th>
+                            <th>Luotu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var employee in employees)
+                        {
+                            <tr>
+                                <td>@employee.Id</td>
+                                <td><strong>@employee.Name</strong></td>
+                                <td>@employee.Email</td>
+                                <td><span class="badge bg-primary">@employee.Role</span></td>
+                                <td>@employee.PhoneNumber</td>
+                                <td>@employee.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
         </div>
-    </div>
-
-    <div class="card">
-        <div class="card-header bg-info text-white">
-            <h5>Työntekijähallinta</h5>
-        </div>
-        <div class="card-body">
-            <p>Käytä seuraavia REST-API-päätepisteitä työntekijöiden hallintaan:</p>
-            <pre><code>
-# Hae kaikki työntekijät
-GET https://localhost:5001/api/employee
-
-# Hae yksittäinen työntekijä
-GET https://localhost:5001/api/employee/1
-
-# Luo uusi työntekijä
-POST https://localhost:5001/api/employee
-Content-Type: application/json
-
-{
-  "name": "Matti Meikäläinen",
-  "email": "matti@@example.com",
-  "role": "Siivoja",
-  "phoneNumber": "+358 123 456789"
-}
-            </code></pre>
-        </div>
-    </div>
+    }
 </div>
+
+@code {
+    private List<Employee>? employees;
+    private string? errorMessage;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Console.WriteLine("[UI] OnInitializedAsync START");
+
+        try
+        {
+            isLoading = true;
+
+            // DEBUG: testikutsu
+            Console.WriteLine("[UI] Calling ApiService.GetEmployeesAsync()");
+
+            employees = await ApiService.GetEmployeesAsync();
+
+            Console.WriteLine($"[UI] Employees loaded: {employees?.Count ?? 0}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[UI] ERROR: {ex}");
+            errorMessage = $"Virhe ladattaessa työntekijöitä: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+
+        Console.WriteLine("[UI] OnInitializedAsync END");
+    }
+}

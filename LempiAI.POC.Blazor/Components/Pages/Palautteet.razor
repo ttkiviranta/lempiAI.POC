@@ -1,41 +1,106 @@
 ﻿@page "/palautteet"
 @rendermode InteractiveServer
+@inject ApiService ApiService
+@using LempiAI.POC.Blazor.Models
+@using LempiAI.POC.Blazor.Services
 
 <div class="container mt-5">
     <h1>⭐ Asiakaspalautteet</h1>
     <hr>
 
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <div class="alert alert-info">
-                <p><strong>Tämä sivu näyttää palautehallinnon pääsyn.</strong></p>
-                <p>API-päätepisteet:</p>
-                <ul>
-                    <li>GET /api/customerservice/all-feedback - Hae kaikki palautteet</li>
-                    <li>POST /api/customerservice/submit-feedback - Lähetä uusi palaute</li>
-                    <li>POST /api/customerservice/analyze-feedback - Analysoi palautteita</li>
-                    <li>GET /api/customerservice/sentiment-summary - Saada tunneanalyysi</li>
-                </ul>
+    @if (isLoading)
+    {
+        <div class="alert alert-info">
+            <p>📥 Ladataan palautetietoja...</p>
+        </div>
+    }
+    else if (errorMessage != null)
+    {
+        <div class="alert alert-danger">
+            <p><strong>❌ Virhe:</strong> @errorMessage</p>
+        </div>
+    }
+    else if (feedbacks == null || feedbacks.Count == 0)
+    {
+        <div class="alert alert-warning">
+            <p>⚠️ Yhtään palautetta ei löytynyt.</p>
+        </div>
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5>Palautteet (@feedbacks.Count kpl)</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Arvio</th>
+                            <th>Palaute</th>
+                            <th>Kategoria</th>
+                            <th>Status</th>
+                            <th>Työntekijä ID</th>
+                            <th>Luotu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var feedback in feedbacks)
+                        {
+                            <tr>
+                                <td>@feedback.Id</td>
+                                <td>
+                                    <span class="badge bg-warning text-dark">
+                                        @for (int i = 0; i < feedback.Rating; i++)
+                                        {
+                                            <span>⭐</span>
+                                        }
+                                    </span>
+                                </td>
+                                <td>@feedback.FeedbackText</td>
+                                <td><span class="badge bg-info">@feedback.Category</span></td>
+                                <td>
+                                    @if (feedback.Status == "Resolved")
+                                    {
+                                        <span class="badge bg-success">@feedback.Status</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@feedback.Status</span>
+                                    }
+                                </td>
+                                <td>@feedback.ProvidedByEmployeeId</td>
+                                <td>@feedback.CreatedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
         </div>
-    </div>
-
-    <div class="card">
-        <div class="card-header bg-success text-white">
-            <h5>Palautehallinta</h5>
-        </div>
-        <div class="card-body">
-            <p>Käytä seuraavia REST-API-päätepisteitä palautteiden hallintaan:</p>
-            <pre><code>
-# Hae kaikki palautteet
-GET https://localhost:5001/api/customerservice/all-feedback
-
-# Analysoi palautteita
-POST https://localhost:5001/api/customerservice/analyze-feedback
-
-# Saada tunneanalyysi
-GET https://localhost:5001/api/customerservice/sentiment-summary
-            </code></pre>
-        </div>
-    </div>
+    }
 </div>
+
+@code {
+    private List<Feedback>? feedbacks;
+    private string? errorMessage;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            isLoading = true;
+            errorMessage = null;
+            feedbacks = await ApiService.GetFeedbackAsync();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Virhe ladattaessa palautteita: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}

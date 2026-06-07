@@ -1,96 +1,115 @@
-﻿namespace LempiAI.POC.Blazor.Services;
+﻿using System.Net.Http.Json;
+using System.Text.Json;
+using LempiAI.POC.Blazor.Models;
+using Microsoft.Extensions.Logging;
+
+namespace LempiAI.POC.Blazor.Services;
 
 public class ApiService
 {
     private readonly HttpClient _httpClient;
+    private readonly ILogger<ApiService> _logger;
 
-    public ApiService(HttpClient httpClient)
+    public ApiService(HttpClient httpClient, ILogger<ApiService> logger)
     {
         _httpClient = httpClient;
+        _logger = logger;
+        _logger.LogInformation($"[ApiService] BaseAddress = {_httpClient.BaseAddress}");
     }
 
+    // -----------------------------
+    // Generic GET with ApiResponse<T>
+    // -----------------------------
+    private async Task<T> GetWrappedAsync<T>(string url)
+    {
+        _logger.LogInformation($"GET {url}");
+        var response = await _httpClient.GetAsync(url);
+        var raw = await response.Content.ReadAsStringAsync();
+        _logger.LogInformation($"RAW RESPONSE: {raw}");
+
+        var parsed = JsonSerializer.Deserialize<ApiResponse<T>>(raw, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
+
+        if (parsed == null)
+            throw new Exception("API returned invalid JSON");
+
+        if (!parsed.Success)
+            throw new Exception(parsed.Error ?? "Unknown API error");
+
+        if (parsed.Data == null)
+            throw new Exception(parsed.Error ?? "Unknown API error");
+
+        return parsed.Data;
+    }
+
+    // -----------------------------
+    // Generic POST with ApiResponse<T>
+    // -----------------------------
+    private async Task<T> PostWrappedAsync<T>(string url, object payload)
+    {
+        _logger.LogInformation($"POST {url}");
+        var response = await _httpClient.PostAsJsonAsync(url, payload);
+        var raw = await response.Content.ReadAsStringAsync();
+        _logger.LogInformation($"RAW RESPONSE: {raw}");
+
+        var parsed = JsonSerializer.Deserialize<ApiResponse<T>>(raw, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
+
+        if (parsed == null)
+            throw new Exception("API returned invalid JSON");
+
+        if (!parsed.Success)
+            throw new Exception(parsed.Error ?? "Unknown API error");
+
+        if (parsed.Data == null)
+            throw new Exception(parsed.Error ?? "Unknown API error");
+
+        return parsed.Data;
+    }
+
+    // -----------------------------
     // Employee endpoints
-    public async Task<T> GetEmployeesAsync<T>()
-    {
-        return await _httpClient.GetFromJsonAsync<T>("api/employee") ?? default!;
-    }
+    // -----------------------------
+    public Task<List<Employee>> GetEmployeesAsync()
+        => GetWrappedAsync<List<Employee>>("api/employee");
 
-    public async Task<T> GetEmployeeByIdAsync<T>(int id)
-    {
-        return await _httpClient.GetFromJsonAsync<T>($"api/employee/{id}") ?? default!;
-    }
+    public Task<Employee> CreateEmployeeAsync(Employee employee)
+        => PostWrappedAsync<Employee>("api/employee", employee);
 
-    public async Task<T> CreateEmployeeAsync<T>(object employee)
-    {
-        var response = await _httpClient.PostAsJsonAsync("api/employee", employee);
-        return await response.Content.ReadFromJsonAsync<T>() ?? default!;
-    }
-
+    // -----------------------------
     // Schedule endpoints
-    public async Task<T> GetSchedulesAsync<T>()
-    {
-        return await _httpClient.GetFromJsonAsync<T>("api/operationsscheduling/schedules") ?? default!;
-    }
+    // -----------------------------
+    public Task<List<Schedule>> GetSchedulesAsync()
+        => GetWrappedAsync<List<Schedule>>("api/operationsscheduling/schedules");
 
-    public async Task<T> CreateScheduleAsync<T>(object schedule)
-    {
-        var response = await _httpClient.PostAsJsonAsync("api/operationsscheduling/create", schedule);
-        return await response.Content.ReadFromJsonAsync<T>() ?? default!;
-    }
+    public Task<Schedule> CreateScheduleAsync(Schedule schedule)
+        => PostWrappedAsync<Schedule>("api/operationsscheduling/create", schedule);
 
-    public async Task<T> OptimizeScheduleAsync<T>(int employeeId)
-    {
-        return await _httpClient.GetFromJsonAsync<T>($"api/operationsscheduling/optimize/{employeeId}") ?? default!;
-    }
-
-    public async Task<T> GetScheduleRecommendationsAsync<T>()
-    {
-        return await _httpClient.GetFromJsonAsync<T>("api/operationsscheduling/recommendations") ?? default!;
-    }
-
+    // -----------------------------
     // Feedback endpoints
-    public async Task<T> GetFeedbackAsync<T>()
-    {
-        return await _httpClient.GetFromJsonAsync<T>("api/customerservice/all-feedback") ?? default!;
-    }
+    // -----------------------------
+    public Task<List<Feedback>> GetFeedbackAsync()
+        => GetWrappedAsync<List<Feedback>>("api/customerservice/all-feedback");
 
-    public async Task<T> SubmitFeedbackAsync<T>(object feedback)
-    {
-        var response = await _httpClient.PostAsJsonAsync("api/customerservice/submit-feedback", feedback);
-        return await response.Content.ReadFromJsonAsync<T>() ?? default!;
-    }
+    public Task<Feedback> SubmitFeedbackAsync(Feedback feedback)
+        => PostWrappedAsync<Feedback>("api/customerservice/submit-feedback", feedback);
 
-    public async Task<T> AnalyzeFeedbackAsync<T>()
-    {
-        var response = await _httpClient.PostAsync("api/customerservice/analyze-feedback", null);
-        return await response.Content.ReadFromJsonAsync<T>() ?? default!;
-    }
-
-    public async Task<T> GetSentimentSummaryAsync<T>()
-    {
-        return await _httpClient.GetFromJsonAsync<T>("api/customerservice/sentiment-summary") ?? default!;
-    }
-
+    // -----------------------------
     // Process improvement endpoints
-    public async Task<T> GetImprovementsAsync<T>()
-    {
-        return await _httpClient.GetFromJsonAsync<T>("api/processimprovement/all-improvements") ?? default!;
-    }
+    // -----------------------------
+    public Task<List<ProcessImprovement>> GetImprovementsAsync()
+        => GetWrappedAsync<List<ProcessImprovement>>("api/processimprovement/all-improvements");
 
-    public async Task<T> IdentifyImprovementsAsync<T>()
-    {
-        var response = await _httpClient.PostAsync("api/processimprovement/identify-improvements", null);
-        return await response.Content.ReadFromJsonAsync<T>() ?? default!;
-    }
+    public Task<ProcessImprovement> CreateImprovementAsync(ProcessImprovement improvement)
+        => PostWrappedAsync<ProcessImprovement>("api/processimprovement/create", improvement);
 
-    public async Task<T> GenerateReportAsync<T>()
-    {
-        var response = await _httpClient.PostAsync("api/processimprovement/generate-report", null);
-        return await response.Content.ReadFromJsonAsync<T>() ?? default!;
-    }
-
-    public async Task<T> GetAgentReportsAsync<T>()
-    {
-        return await _httpClient.GetFromJsonAsync<T>("api/processimprovement/reports") ?? default!;
-    }
+    // -----------------------------
+    // Agent report endpoints
+    // -----------------------------
+    public Task<List<AgentReport>> GetAgentReportsAsync()
+        => GetWrappedAsync<List<AgentReport>>("api/processimprovement/reports");
 }

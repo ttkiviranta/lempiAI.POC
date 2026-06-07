@@ -1,41 +1,116 @@
 ﻿@page "/aikataulut"
 @rendermode InteractiveServer
+@inject ApiService ApiService
+@using LempiAI.POC.Blazor.Models
+@using LempiAI.POC.Blazor.Services
 
 <div class="container mt-5">
     <h1>📅 Aikataulut</h1>
     <hr>
 
-    <div class="row mb-4">
-        <div class="col-md-12">
-            <div class="alert alert-info">
-                <p><strong>Tämä sivu näyttää aikatauluhallinnon pääsyn.</strong></p>
-                <p>API-päätepisteet:</p>
-                <ul>
-                    <li>GET /api/operationsscheduling/schedules - Hae kaikki aikataulut</li>
-                    <li>POST /api/operationsscheduling/create - Luo uusi aikataulu</li>
-                    <li>GET /api/operationsscheduling/optimize/{employeeId} - Optimoi työntekijän aikataulua</li>
-                    <li>GET /api/operationsscheduling/recommendations - Saada suosituksia</li>
-                </ul>
+    @if (isLoading)
+    {
+        <div class="alert alert-info">
+            <p>📥 Ladataan aikataulutietoja...</p>
+        </div>
+    }
+    else if (errorMessage != null)
+    {
+        <div class="alert alert-danger">
+            <p><strong>❌ Virhe:</strong> @errorMessage</p>
+        </div>
+    }
+    else if (schedules == null || schedules.Count == 0)
+    {
+        <div class="alert alert-warning">
+            <p>⚠️ Yhtään aikataulua ei löytynyt.</p>
+        </div>
+    }
+    else
+    {
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5>Aikataulut (@schedules.Count kpl)</h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>ID</th>
+                            <th>Tehtävä</th>
+                            <th>Alkaa</th>
+                            <th>Päättyy</th>
+                            <th>Status</th>
+                            <th>Prioriteetti</th>
+                            <th>Työntekijä ID</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var schedule in schedules)
+                        {
+                            <tr>
+                                <td>@schedule.Id</td>
+                                <td>@schedule.TaskDescription</td>
+                                <td>@schedule.ScheduledStart.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>@schedule.ScheduledEnd.ToString("dd.MM.yyyy HH:mm")</td>
+                                <td>
+                                    @if (schedule.Status == "Completed")
+                                    {
+                                        <span class="badge bg-success">@schedule.Status</span>
+                                    }
+                                    else if (schedule.Status == "In Progress")
+                                    {
+                                        <span class="badge bg-warning text-dark">@schedule.Status</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">@schedule.Status</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (schedule.Priority == "High")
+                                    {
+                                        <span class="badge bg-danger">@schedule.Priority</span>
+                                    }
+                                    else if (schedule.Priority == "Medium")
+                                    {
+                                        <span class="badge bg-warning text-dark">@schedule.Priority</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-info">@schedule.Priority</span>
+                                    }
+                                </td>
+                                <td>@schedule.EmployeeId</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
         </div>
-    </div>
-
-    <div class="card">
-        <div class="card-header bg-primary text-white">
-            <h5>Aikatauluhallinta</h5>
-        </div>
-        <div class="card-body">
-            <p>Käytä seuraavia REST-API-päätepisteitä aikataulun hallintaan:</p>
-            <pre><code>
-# Hae kaikki aikataulut
-GET https://localhost:5001/api/operationsscheduling/schedules
-
-# Optimoi aikataulua
-POST https://localhost:5001/api/operationsscheduling/optimize/1
-
-# Saada suosituksia
-GET https://localhost:5001/api/operationsscheduling/recommendations
-            </code></pre>
-        </div>
-    </div>
+    }
 </div>
+
+@code {
+    private List<Schedule>? schedules;
+    private string? errorMessage;
+    private bool isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            isLoading = true;
+            errorMessage = null;
+            schedules = await ApiService.GetSchedulesAsync();
+        }
+        catch (Exception ex)
+        {
+            errorMessage = $"Virhe ladattaessa aikatauluja: {ex.Message}";
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}
